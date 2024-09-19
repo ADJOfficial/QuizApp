@@ -9,7 +9,7 @@ import UIKit
 
 class GradientView: UIView {
     private let gradientLayer = CAGradientLayer()
-    init(viewCornerRadius: CGFloat = 22, layerCornerRadius: CGFloat = 22, colors: [UIColor]  = [UIColor.systemRed.withAlphaComponent(0.5),UIColor.systemYellow]) {
+    init(viewCornerRadius: CGFloat = 22, layerCornerRadius: CGFloat = 22, colors: [UIColor]  = [UIColor.systemBlue.withAlphaComponent(0.5),UIColor.systemYellow]) {
         super.init(frame: .zero)
         self.translatesAutoresizingMaskIntoConstraints = false
         self.layer.cornerRadius = viewCornerRadius

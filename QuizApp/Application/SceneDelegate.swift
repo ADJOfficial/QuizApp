@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.rootViewController()
     }
     private func rootViewController() {
-        let navigation = UINavigationController(rootViewController: ViewController(subjectRecords: Subject(name: "", questions: [])))
+        let navigation = UINavigationController(rootViewController: QuizViewController(subjectRecords: Subject(name: "", questions: [], time: 0)))
         window?.rootViewController = navigation
         navigation.setNavigationBarHidden(true, animated: false)
         window?.makeKeyAndVisible()

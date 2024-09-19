@@ -10,6 +10,7 @@ import Foundation
 struct Subject {
     let name: String
     let questions: [Question]
+    let time: Int
 }
 let subjects: [Subject] = [
     Subject(name: "Maths", questions: [
@@ -25,7 +26,7 @@ let subjects: [Subject] = [
             Option(text: "15", isCorrect: false),
             Option(text: "32", isCorrect: false)
         ]),
-    ]),
+    ], time: 5),
     Subject(name: "Computer", questions: [
         Question(text: "OOP Stands For", option: [
             Option(text: "Object Operating Program", isCorrect: false),
@@ -39,5 +40,5 @@ let subjects: [Subject] = [
             Option(text: "OOP Programming Language", isCorrect: false),
             Option(text: "Responsive Programming Language", isCorrect: false),
         ]),
-    ])
+    ], time: 5)
 ]

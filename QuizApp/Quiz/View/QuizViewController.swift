@@ -23,6 +23,7 @@ class QuizViewController: BaseViewController {
     
     private let quizStatus = Label(text: "")
     
+    private let quizViewModel = QuizViewModel()
     private var currentQuestionIndex = 0
     private var correctAnswersCount = 0
     private var isQuizStarted = false
@@ -41,6 +42,7 @@ class QuizViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         selectQuizSubject()
+        showNextQuestion()
         hideAllOptionsButton()
     }
     override func setupViews() {
@@ -139,20 +141,9 @@ class QuizViewController: BaseViewController {
     }
     // MARK: For Subject Next Question
     private func showNextQuestion() {
-        guard let subject = selectedSubject else {
-            return
-        }
-        currentQuestionIndex += 1
-        if currentQuestionIndex < subject.questions.count {
-            let nextQuestion = subject.questions[currentQuestionIndex]
-            self.subjectQuestion.text = nextQuestion.text
-            showQuestionOptions(for: nextQuestion)
-        } else {
-//            self.subjectQuestion.text = "Quiz Completed! You answered \(correctAnswersCount) out of \(subject.questions.count) questions Correctly, Your percentage is \(calculatePercentage())"
-            hideAllOptionsButton()
-            quizStatus.isHidden = false
-            startQuizButton.isHidden = true
-        }
+        quizViewModel.showNextQuestion(onNextQuestion: { nextQuestion in
+            self.subjectQuestion.text = nextQuestion
+        })
     }
     // MARK: For Subject Question Options
     private func showQuestionOptions(for question: Question) {
@@ -188,21 +179,12 @@ class QuizViewController: BaseViewController {
         return percentage
     }
     // MARK: For Start Quiz and Show 1st Question
-    @objc func didStartQuizButtonTapped(_ button: UIButton) {
-        guard let subject = selectedSubject else {
-            return
-        }
+    @objc func didStartQuizButtonTapped() {
         if !isQuizStarted {
-            if let firstQuestion = subject.questions.first {
-                self.subjectQuestion.text = firstQuestion.text
-                self.subjectTotalQuestion.isHidden = true
-                self.subjectQuizTime.isHidden = true
-                showQuestionOptions(for: firstQuestion)
-                showAllOptionsButton()
-                startQuizButton.setTitle("Next Question", for: .normal)
-                isQuizStarted = true
-            } else {
-                self.subjectQuestion.text = "\(subject.name) has no question yet!"
+            quizViewModel.startQuiz { questionText in
+                self.updateUILabelText(text: questionText)
+                self.startQuizButton.setTitle("Next Question", for: .normal)
+                self.isQuizStarted = true
             }
         } else {
             showNextQuestion()
@@ -239,7 +221,55 @@ class QuizViewController: BaseViewController {
         fourthOption.setImage(UIImage(systemName: fourthOption.isSelected ? "circle.fill" : "circle"), for: .normal)
         
     }
+    
+    
+    private func updateUILabelText(text: String) {
+        self.subjectQuestion.text = text
+        self.subjectTotalQuestion.isHidden = true
+        self.subjectQuizTime.isHidden = true
+    }
 }
 #Preview {
     QuizViewController(subjectRecords: Subject(name: "", questions: [], time: 0))
 }
+
+
+
+
+//
+//    guard let subject = selectedSubject else {
+//        return
+//    }
+//    currentQuestionIndex += 1
+//    if currentQuestionIndex < subject.questions.count {
+//        let nextQuestion = subject.questions[currentQuestionIndex]
+//        self.subjectQuestion.text = nextQuestion.text
+//        showQuestionOptions(for: nextQuestion)
+//    } else {
+////            self.subjectQuestion.text = "Quiz Completed! You answered \(correctAnswersCount) out of \(subject.questions.count) questions Correctly, Your percentage is \(calculatePercentage())"
+//        hideAllOptionsButton()
+//        quizStatus.isHidden = false
+//        startQuizButton.isHidden = true
+//    }
+//}
+
+
+
+//guard let subject = selectedSubject else {
+//    return
+//}
+//if !isQuizStarted {
+//    if let firstQuestion = subject.questions.first {
+//        self.subjectQuestion.text = firstQuestion.text
+//        self.subjectTotalQuestion.isHidden = true
+//        self.subjectQuizTime.isHidden = true
+//        showQuestionOptions(for: firstQuestion)
+//        showAllOptionsButton()
+//        startQuizButton.setTitle("Next Question", for: .normal)
+//        isQuizStarted = true
+//    } else {
+//        self.subjectQuestion.text = "\(subject.name) has no question yet!"
+//    }
+//} else {
+//    showNextQuestion()
+//}
