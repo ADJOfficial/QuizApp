@@ -7,11 +7,20 @@
 
 class QuizViewModel {
     
-    private var selectedSubject: Subject?
-    private var currentQuestionIndex: Int = 0
-    private var isQuizStarted = false
-    
-    func showNextQuestion(onNextQuestion: ((String) -> Void)) {
+    func startQuiz(selectedSubject: Subject? ,isQuizStarted: inout Bool, questionText: ((String) -> Void)) {
+        guard let subject = selectedSubject else {
+            return
+        }
+        if !isQuizStarted {
+            if let firstQuestion = subject.questions.first {
+                questionText(firstQuestion.text)
+                isQuizStarted = true
+            } else {
+                questionText("\(subject.name) has no question yet!")
+            }
+        }
+    }
+    func showNextQuestion(selectedSubject: Subject? , currentQuestionIndex: inout Int, onNextQuestion: ((String) -> Void)) {
         guard let subject = selectedSubject else {
             return
         }
@@ -24,17 +33,29 @@ class QuizViewModel {
             onNextQuestion(message)
         }
     }
-    func startQuiz(questionText: ((String) -> Void)) {
+    func showQuestionOptions(for question: Question, buttons: (([UIButton]) -> Void)) {
+        let options = question.option
+        let optionButtons = buttons([])
+        optionButtons.forEach { $0.isHidden = true }
+
+         for (index, option) in options.enumerated() {
+             if index < optionButtons.count {
+                 let button = optionButtons[index]
+                 button.setTitle("  \(option.text)", for: .normal)
+                 button.isHidden = false
+                 button.tag = index
+//                 button.addTarget(self, action: #selector(didQuizFinished), for: .touchUpInside)
+             }
+         }
+    }
+    func didQuizFinished(selectedSubject: Subject?, currentQuestionIndex: Int, correctAnswersCount: inout Int, sender: () -> Void) {
         guard let subject = selectedSubject else {
             return
         }
-        if !isQuizStarted {
-            if let firstQuestion = subject.questions.first {
-                questionText(firstQuestion.text)
-                isQuizStarted = true
-            } else {
-                questionText("\(subject.name) has no question yet!")
-            }
+        let currentQuestion = subject.questions[currentQuestionIndex]
+        let selectedOption = currentQuestion.option.sender()
+        if selectedOption.isCorrect {
+            correctAnswersCount += 1
         }
     }
 }

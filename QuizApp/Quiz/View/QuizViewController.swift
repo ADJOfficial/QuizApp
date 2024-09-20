@@ -16,8 +16,8 @@ class QuizViewController: BaseViewController {
     private let startQuizButton = Button(setTitle: "Start Quiz")
     private let selectSubject = Button(backgroundColor: .clear, setTitle: "Select Subject", setTitleColor: .systemBlue)
 
-    private let firstOption = SystemImageButton(image: UIImage(systemName: "circle"), setTitle: "", setTitleColor: .black)
-    private let secondOption = SystemImageButton(image: UIImage(systemName: "circle"), setTitle: "", setTitleColor: .black)
+    let firstOption = SystemImageButton(image: UIImage(systemName: "circle"), setTitle: "", setTitleColor: .black)
+    let secondOption = SystemImageButton(image: UIImage(systemName: "circle"), setTitle: "", setTitleColor: .black)
     private let thirdOption = SystemImageButton(image: UIImage(systemName: "circle"), setTitle: "", setTitleColor: .black)
     private let fourthOption = SystemImageButton(image: UIImage(systemName: "circle"), setTitle: "", setTitleColor: .black)
     
@@ -141,7 +141,7 @@ class QuizViewController: BaseViewController {
     }
     // MARK: For Subject Next Question
     private func showNextQuestion() {
-        quizViewModel.showNextQuestion(onNextQuestion: { nextQuestion in
+        quizViewModel.showNextQuestion(selectedSubject: selectedSubject, currentQuestionIndex: &currentQuestionIndex, onNextQuestion: { nextQuestion in
             self.subjectQuestion.text = nextQuestion
         })
     }
@@ -149,8 +149,6 @@ class QuizViewController: BaseViewController {
     private func showQuestionOptions(for question: Question) {
         let options = question.option
          let optionButtons = [firstOption, secondOption, thirdOption, fourthOption]
-         
-         // Hide all buttons initially
         optionButtons.forEach { $0.isHidden = true }
 
          for (index, option) in options.enumerated() {
@@ -181,32 +179,37 @@ class QuizViewController: BaseViewController {
     // MARK: For Start Quiz and Show 1st Question
     @objc func didStartQuizButtonTapped() {
         if !isQuizStarted {
-            quizViewModel.startQuiz { questionText in
+            quizViewModel.startQuiz(selectedSubject: selectedSubject, isQuizStarted: &isQuizStarted, questionText: { questionText in
                 self.updateUILabelText(text: questionText)
                 self.startQuizButton.setTitle("Next Question", for: .normal)
-                self.isQuizStarted = true
-            }
+//                self.isQuizStarted = true
+            })
         } else {
             showNextQuestion()
         }
     }
-    @objc func didQuizFinished(_ sender: UIButton) {
-        guard let subject = selectedSubject else {
-            return
-        }
-        let currentQuestion = subject.questions[currentQuestionIndex]
-        let selectedOption = currentQuestion.option[sender.tag]
-        if selectedOption.isCorrect {
-            correctAnswersCount += 1
-        }
-        showNextQuestion()
-        if calculatePercentage() >= 50 {
-            quizStatus.text = "Congratulation"
-            quizStatus.textColor = .systemGreen
-        } else {
-            quizStatus.text = "Better Luck Next Time"
-            quizStatus.textColor = .systemRed
-        }
+//    @objc func didQuizFinished(_ sender: UIButton) {
+//        guard let subject = selectedSubject else {
+//            return
+//        }
+//        let currentQuestion = subject.questions[currentQuestionIndex]
+//        let selectedOption = currentQuestion.option[sender.tag]
+//        if selectedOption.isCorrect {
+//            correctAnswersCount += 1
+//        }
+//        showNextQuestion()
+//        if calculatePercentage() >= 50 {
+//            quizStatus.text = "Congratulation"
+//            quizStatus.textColor = .systemGreen
+//        } else {
+//            quizStatus.text = "Better Luck Next Time"
+//            quizStatus.textColor = .systemRed
+//        }
+//    }
+    private func updateUILabelText(text: String) {
+        self.subjectQuestion.text = text
+        self.subjectTotalQuestion.isHidden = true
+        self.subjectQuizTime.isHidden = true
     }
     @objc func didTappedRadioButton(_ sender: UIButton) {
         firstOption.isSelected = false
@@ -220,13 +223,6 @@ class QuizViewController: BaseViewController {
         thirdOption.setImage(UIImage(systemName: thirdOption.isSelected ? "circle.fill" : "circle"), for: .normal)
         fourthOption.setImage(UIImage(systemName: fourthOption.isSelected ? "circle.fill" : "circle"), for: .normal)
         
-    }
-    
-    
-    private func updateUILabelText(text: String) {
-        self.subjectQuestion.text = text
-        self.subjectTotalQuestion.isHidden = true
-        self.subjectQuizTime.isHidden = true
     }
 }
 #Preview {
@@ -273,3 +269,21 @@ class QuizViewController: BaseViewController {
 //} else {
 //    showNextQuestion()
 //}
+
+
+
+//kindly meri helpl karin main chaahta hon ke ye func ViewModel main place Karon kiyu ky main MVVM use car raha to is func ko main ViewModel main kesy place Karon or View main Access Karon kiyu ky Controller main 4 buttons Han jo is func main pass ho rahy firstbutton etc to button wall cam ViewModel main kesy Hong :     private func showQuestionOptions(for question: Question) {
+//        let options = question.option
+//         let optionButtons = [firstOption, secondOption, thirdOption, fourthOption]
+//        optionButtons.forEach { $0.isHidden = true }
+//
+//         for (index, option) in options.enumerated() {
+//             if index < optionButtons.count {
+//                 let button = optionButtons[index]
+//                 button.setTitle("  \(option.text)", for: .normal)
+//                 button.isHidden = false
+//                 button.tag = index
+//                 button.addTarget(self, action: #selector(didQuizFinished), for: .touchUpInside)
+//             }
+//         }
+//    }
